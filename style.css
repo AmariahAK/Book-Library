@@ -7,9 +7,9 @@ html {
 
 /* Set background colors and text styles */
 body {
-    background-color: #f5f5dc; /* Cream-colored background */
+    background-color: #f9f7f6; /* Light beige background */
     color: #333; /* Dark text color */
-    font-family: Arial, sans-serif; /* Use Arial font for text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Use a clean sans-serif font */
 }
 
 /* Main container styles */
@@ -21,27 +21,27 @@ body {
 
 /* Header styles */
 header {
-    background-color: black; /* Black background for header */
-    color: white; /* White text color */
+    background-color: #483d8b; /* Dark slate blue background for header */
+    color: #fff; /* White text color */
     padding: 20px;
     text-align: center;
 }
 
 /* Navigation menu styles */
 nav {
-    background-color: #333; /* Dark gray background for navigation */
+    background-color: #6a5acd; /* Slate blue background for navigation */
     padding: 10px;
     text-align: center;
 }
 
 nav a {
-    color: white; /* White text color for links */
+    color: #fff; /* White text color for links */
     text-decoration: none;
     padding: 8px 16px;
 }
 
 nav a:hover {
-    background-color: #555; /* Darker gray on hover */
+    background-color: #836fff; /* Lighter purple on hover */
 }
 
 /* Book container styles */
@@ -59,7 +59,7 @@ nav a:hover {
     border-radius: 5px;
     padding: 10px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: white;
+    background-color: #fff; /* White background for books */
 }
 
 .book img {
@@ -84,13 +84,6 @@ nav a:hover {
 footer {
     text-align: center;
     padding: 20px;
-    background-color: #333;
-    color: white;
-}
-
-/* Responsive layout for smaller screens */
-@media (max-width: 768px) {
-    .book {
-        width: 100%; /* Full width for books on smaller screens */
-    }
+    background-color: #483d8b; /* Dark slate blue background for footer */
+    color: #fff; /* White text color */
 }
