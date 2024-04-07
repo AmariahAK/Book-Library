@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Library</title>
+    
+    <!-- Link to external CSS file -->
+    <link rel="stylesheet" href="styles.css">
+
+    <!-- External JavaScript files -->
+    <script src="script.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Book Library</h1>
+        <nav>
+            <a href="#" onclick="displayCategory('kids-books')">Kids Books</a>
+            <a href="#" onclick="displayCategory('musicals')">Musicals</a>
+            <a href="#" onclick="displayCategory('action')">Action</a>
+            <a href="#" onclick="displayCategory('fantasy')">Fantasy</a>
+            <a href="#" onclick="displayCategory('horror')">Horror</a>
+            <a href="#" onclick="displayCategory('psychological')">Psychological</a>
+            <a href="#" onclick="displayCategory('thriller')">Thriller</a>
+            <a href="#" onclick="displayCategory('romance')">Romance</a>
+            <a href="#" onclick="displayCategory('self-help')">Self Help</a>
+        </nav>
+    </header>
+
+    <!-- Main content area -->
+    <div class="container">
+        <!-- Book container -->
+        <div id="book-container"></div>
+
+        <!-- Search input -->
+        <div>
+            <label for="searchInput">Search:</label>
+            <input type="text" id="searchInput" oninput="handleSearch()">
+        </div>
+
+        <!-- Bookmark button -->
+        <button onclick="bookmarkCurrentPage()">Bookmark Current Page</button>
+
+        <!-- Favorite button -->
+        <button onclick="favoriteBook()">Add to Favorites</button>
+
+        <!-- Like and Comment section -->
+        <div>
+            <h2>Like and Comment</h2>
+            <button onclick="likeBook()">Like</button>
+            <textarea id="commentInput" placeholder="Add your comment..."></textarea>
+            <button onclick="commentOnBook()">Comment</button>
+        </div>
+
+        <!-- Add book form -->
+        <div>
+            <h2>Add New Book</h2>
+            <label for="titleInput">Title:</label>
+            <input type="text" id="titleInput"><br>
+            <label for="authorInput">Author:</label>
+            <input type="text" id="authorInput"><br>
+            <label for="descriptionInput">Description:</label>
+            <textarea id="descriptionInput"></textarea><br>
+            <label for="categorySelect">Category:</label>
+            <select id="categorySelect">
+                <option value="kids-books">Kids Books</option>
+                <option value="musicals">Musicals</option>
+                <option value="action">Action</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="horror">Horror</option>
+                <option value="psychological">Psychological</option>
+                <option value="thriller">Thriller</option>
+                <option value="romance">Romance</option>
+                <option value="self-help">Self Help</option>
+            </select><br>
+            <label for="imageInput">Image URL:</label>
+            <input type="text" id="imageInput"><br>
+            <button onclick="addNewBook()">Add Book</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Book Library</p>
+    </footer>
+
+</body>
+</html>

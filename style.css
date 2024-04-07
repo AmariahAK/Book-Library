@@ -1,0 +1,95 @@
+/* Reset default margin and padding */
+body,
+html {
+    margin: 0;
+    padding: 0;
+}
+
+/* Set background colors */
+body {
+    background-color: cream; /* Cream-colored background */
+    color: #333; /* Dark text color */
+}
+
+/* Main container styles */
+.container {
+    max-width: 1200px; /* Limit width for content */
+    margin: 0 auto; /* Center container horizontally */
+    padding: 20px; /* Add padding inside container */
+}
+
+/* Header styles */
+header {
+    background-color: black; /* Black background for header */
+    color: white; /* White text color */
+    padding: 20px;
+    text-align: center;
+}
+
+/* Navigation menu styles */
+nav {
+    background-color: #333; /* Dark gray background for navigation */
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: white; /* White text color for links */
+    text-decoration: none;
+    padding: 8px 16px;
+}
+
+nav a:hover {
+    background-color: #555; /* Darker gray on hover */
+}
+
+/* Book container styles */
+#book-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.book {
+    width: 250px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.book img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.book h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.book p {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+/* Footer styles */
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+    .book {
+        width: 100%;
+    }
+}
