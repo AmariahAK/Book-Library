@@ -1,91 +1,202 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Library</title>
-    
-    <!-- Link to external CSS file -->
-    <link rel="stylesheet" href="styles.css">
+// Event listener for DOMContentLoaded
+document.addEventListener('DOMContentLoaded', () => {
+    // Call functions to set up event listeners and initial display
+    displayBooks(); // Display all books initially
+    addGenreEventListeners(); // Add event listeners to genre buttons
+});
 
-    <!-- External JavaScript files -->
-    <script src="script.js" defer></script>
-    <script src="app.js" defer></script>
-</head>
-<body>
+// Function to display books based on category
+async function displayBooks(category = '') {
+    try {
+        const booksContainer = document.getElementById('book-container');
+        booksContainer.innerHTML = ''; // Clear previous books
+        
+        // Fetch books data from the server
+        const response = await fetch('http://localhost:3000/books');
+        const books = await response.json();
 
-    <!-- Header -->
-    <header>
-        <h1>Book Library</h1>
-        <nav>
-            <a href="#" onclick="displayCategory('kids-books')">Kids Books</a>
-            <a href="#" onclick="displayCategory('musicals')">Musicals</a>
-            <a href="#" onclick="displayCategory('action')">Action</a>
-            <a href="#" onclick="displayCategory('fantasy')">Fantasy</a>
-            <a href="#" onclick="displayCategory('horror')">Horror</a>
-            <a href="#" onclick="displayCategory('psychological')">Psychological</a>
-            <a href="#" onclick="displayCategory('thriller')">Thriller</a>
-            <a href="#" onclick="displayCategory('romance')">Romance</a>
-            <a href="#" onclick="displayCategory('self-help')">Self Help</a>
-        </nav>
-    </header>
+        // Filter books by category if provided
+        const filteredBooks = category ? books.filter(book => book.category === category) : books;
 
-    <!-- Main content area -->
-    <div class="container">
-        <!-- Book container -->
-        <div id="book-container"></div>
+        // Iterate over filtered books and create book elements
+        filteredBooks.forEach(book => {
+            const bookElement = createBookElement(book);
+            booksContainer.appendChild(bookElement);
+        });
+    } catch (error) {
+        console.error('Error displaying books:', error);
+    }
+}
 
-        <!-- Search input -->
-        <div>
-            <label for="searchInput">Search:</label>
-            <input type="text" id="searchInput" oninput="handleSearch()">
-        </div>
+// Function to create a book element and attach event listeners
+function createBookElement(book) {
+    const bookElement = document.createElement('div');
+    bookElement.classList.add('book');
 
-        <!-- Bookmark button -->
-        <button onclick="bookmarkCurrentPage()">Bookmark Current Page</button>
+    // Create and append book image
+    const img = document.createElement('img');
+    img.src = book.imageUrl;
+    img.alt = book.title;
+    bookElement.appendChild(img);
 
-        <!-- Favorite button -->
-        <button onclick="favoriteBook()">Add to Favorites</button>
+    // Create and append book title
+    const title = document.createElement('h3');
+    title.textContent = book.title;
+    bookElement.appendChild(title);
 
-        <!-- Like and Comment section -->
-        <div>
-            <h2>Like and Comment</h2>
-            <button onclick="likeBook()">Like</button>
-            <textarea id="commentInput" placeholder="Add your comment..."></textarea>
-            <button onclick="commentOnBook()">Comment</button>
-        </div>
+    // Create and append book description
+    const description = document.createElement('p');
+    description.textContent = book.description;
+    bookElement.appendChild(description);
 
-        <!-- Add book form -->
-        <div>
-            <h2>Add New Book</h2>
-            <label for="titleInput">Title:</label>
-            <input type="text" id="titleInput"><br>
-            <label for="authorInput">Author:</label>
-            <input type="text" id="authorInput"><br>
-            <label for="descriptionInput">Description:</label>
-            <textarea id="descriptionInput"></textarea><br>
-            <label for="categorySelect">Category:</label>
-            <select id="categorySelect">
-                <option value="kids-books">Kids Books</option>
-                <option value="musicals">Musicals</option>
-                <option value="action">Action</option>
-                <option value="fantasy">Fantasy</option>
-                <option value="horror">Horror</option>
-                <option value="psychological">Psychological</option>
-                <option value="thriller">Thriller</option>
-                <option value="romance">Romance</option>
-                <option value="self-help">Self Help</option>
-            </select><br>
-            <label for="imageInput">Image URL:</label>
-            <input type="text" id="imageInput"><br>
-            <button onclick="addNewBook()">Add Book</button>
-        </div>
-    </div>
+    // Create and append like button
+    const likeButton = document.createElement('button');
+    likeButton.textContent = 'Like';
+    likeButton.addEventListener('click', () => {
+        likeBook(book.id);
+    });
+    bookElement.appendChild(likeButton);
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Book Library</p>
-    </footer>
+    // Create and append comment button
+    const commentButton = document.createElement('button');
+    commentButton.textContent = 'Comment';
+    commentButton.addEventListener('click', () => {
+        const comment = prompt('Enter your comment:');
+        if (comment) {
+            addComment(book.id, comment);
+        }
+    });
+    bookElement.appendChild(commentButton);
 
-</body>
-</html>
+    // Create and append favorite button
+    const favoriteButton = document.createElement('button');
+    favoriteButton.textContent = book.favorite ? 'Remove Favorite' : 'Add Favorite';
+    favoriteButton.addEventListener('click', () => {
+        toggleFavorite(book.id);
+    });
+    bookElement.appendChild(favoriteButton);
+
+    // Create and append bookmark button
+    const bookmarkButton = document.createElement('button');
+    bookmarkButton.textContent = 'Bookmark';
+    bookmarkButton.addEventListener('click', () => {
+        const pageNumber = prompt('Enter the page number to bookmark:');
+        if (pageNumber && !isNaN(pageNumber)) {
+            bookmarkPage(book.id, parseInt(pageNumber));
+        }
+    });
+    bookElement.appendChild(bookmarkButton);
+
+    return bookElement;
+}
+
+// Function to handle clicking genre buttons
+function addGenreEventListeners() {
+    const genreButtons = document.querySelectorAll('.genre-button');
+    genreButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const genre = button.dataset.genre;
+            displayBooks(genre); // Display books based on selected genre
+        });
+    });
+}
+
+// Function to like a book
+async function likeBook(bookId) {
+    try {
+        const response = await fetch(`http://localhost:3000/books/${bookId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch book details');
+        }
+        const book = await response.json();
+        book.likes++;
+        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(book)
+        });
+        if (!updateResponse.ok) {
+            throw new Error('Failed to update book');
+        }
+        displayBooks(); // Refresh displayed books
+    } catch (error) {
+        console.error('Error liking book:', error);
+    }
+}
+
+// Function to add a comment to a book
+async function addComment(bookId, comment) {
+    try {
+        const response = await fetch(`http://localhost:3000/books/${bookId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch book details');
+        }
+        const book = await response.json();
+        book.comments.push(comment);
+        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(book)
+        });
+        if (!updateResponse.ok) {
+            throw new Error('Failed to add comment');
+        }
+        displayBooks(); // Refresh displayed books
+    } catch (error) {
+        console.error('Error adding comment:', error);
+    }
+}
+
+// Function to toggle the favorite status of a book
+async function toggleFavorite(bookId) {
+    try {
+        const response = await fetch(`http://localhost:3000/books/${bookId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch book details');
+        }
+        const book = await response.json();
+        book.favorite = !book.favorite;
+        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(book)
+        });
+        if (!updateResponse.ok) {
+            throw new Error('Failed to update book');
+        }
+        displayBooks(); // Refresh displayed books
+    } catch (error) {
+        console.error('Error toggling favorite:', error);
+    }
+}
+
+// Function to bookmark a page in a book
+async function bookmarkPage(bookId, pageNumber) {
+    try {
+        const response = await fetch(`http://localhost:3000/books/${bookId}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch book details');
+        }
+        const book = await response.json();
+        book.bookmarkedPage = pageNumber;
+        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(book)
+        });
+        if (!updateResponse.ok) {
+            throw new Error('Failed to update bookmark');
+        }
+        displayBooks(); // Refresh displayed books
+    } catch (error) {
+        console.error('Error bookmarking page:', error);
+    }
+}

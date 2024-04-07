@@ -7,8 +7,9 @@ html {
 
 /* Set background colors */
 body {
-    background-color: cream; /* Cream-colored background */
+    background-color: #f5f5dc; /* Cream-colored background */
     color: #333; /* Dark text color */
+    font-family: Arial, sans-serif; /* Use Arial font for text */
 }
 
 /* Main container styles */
