@@ -5,7 +5,7 @@ html {
     padding: 0;
 }
 
-/* Set background colors */
+/* Set background colors and text styles */
 body {
     background-color: #f5f5dc; /* Cream-colored background */
     color: #333; /* Dark text color */
@@ -88,9 +88,9 @@ footer {
     color: white;
 }
 
-/* Responsive layout */
+/* Responsive layout for smaller screens */
 @media (max-width: 768px) {
     .book {
-        width: 100%;
+        width: 100%; /* Full width for books on smaller screens */
     }
 }

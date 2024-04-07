@@ -8,8 +8,10 @@
     <!-- Link to external CSS file -->
     <link rel="stylesheet" href="styles.css">
 
+    <!-- Include Axios for HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
     <!-- External JavaScript files -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Include Axios for HTTP requests -->
     <script src="script.js" defer></script>
     <script src="app.js" defer></script>
 </head>
@@ -19,6 +21,7 @@
     <header>
         <h1>Book Library</h1>
         <nav>
+            <!-- Make sure these onclick functions are defined in script.js or app.js -->
             <a href="#" onclick="displayCategory('kids-books')">Kids Books</a>
             <a href="#" onclick="displayCategory('musicals')">Musicals</a>
             <a href="#" onclick="displayCategory('action')">Action</a>

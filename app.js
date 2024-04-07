@@ -74,6 +74,9 @@ async function displayBooks(category = '') {
         }
         const books = await response.json();
         const bookContainer = document.getElementById('bookContainer');
+        if (!bookContainer) {
+            throw new Error('bookContainer element not found');
+        }
         bookContainer.innerHTML = ''; // Clear previous books
         books.forEach(book => {
             const bookElement = createBookElement(book);

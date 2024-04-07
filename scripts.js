@@ -9,10 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
 async function displayBooks(category = '') {
     try {
         const booksContainer = document.getElementById('book-container');
+        if (!booksContainer) {
+            console.error('Books container not found');
+            return;
+        }
+
         booksContainer.innerHTML = ''; // Clear previous books
         
         // Fetch books data from the server
         const response = await fetch('http://localhost:3000/books');
+        if (!response.ok) {
+            throw new Error('Failed to fetch books');
+        }
         const books = await response.json();
 
         // Filter books by category if provided
