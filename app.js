@@ -1,12 +1,14 @@
-// Book data (title, description, category, imageUrl)
+// Book data (id, title, description, category, imageUrl, favorite, bookmarkedPage, likes, comments)
 let books = [
     { id: 1, title: "Goodnight Moon", description: "A classic bedtime story.", category: "Kids", imageUrl: "images/Goodnight Moon.jpg", favorite: false, bookmarkedPage: 0, likes: 0, comments: [] },
     { id: 2, title: "Where the Wild Things Are", description: "Story of adventure and imagination.", category: "Kids", imageUrl: "images/Where the Wild Things Are.jpg", favorite: false, bookmarkedPage: 0, likes: 0, comments: [] },
     // Add more books here...
 ];
 
-// Display all books by default
-displayBooks();
+document.addEventListener('DOMContentLoaded', () => {
+    displayBooks(); // Display all books by default
+    addGenreEventListeners(); // Add event listeners to genre buttons
+});
 
 // Function to create a book element
 function createBookElement(book) {
@@ -26,7 +28,7 @@ function createBookElement(book) {
     description.textContent = book.description;
     bookElement.appendChild(description);
 
-    // Add like and comment functionality
+    // Add like button
     const likeButton = document.createElement('button');
     likeButton.textContent = 'Like';
     likeButton.addEventListener('click', () => {
@@ -35,6 +37,7 @@ function createBookElement(book) {
     });
     bookElement.appendChild(likeButton);
 
+    // Add comment button
     const commentButton = document.createElement('button');
     commentButton.textContent = 'Comment';
     commentButton.addEventListener('click', () => {
@@ -71,30 +74,31 @@ function createBookElement(book) {
     return bookElement;
 }
 
-// Function to display books based on category and search
+// Function to display books based on category or search term
 function displayBooks(category = '', searchTerm = '') {
     const bookContainer = document.getElementById('bookContainer');
     bookContainer.innerHTML = ''; // Clear previous books
 
-    let filteredBooks = books;
+    const filteredBooks = books.filter(book => {
+        const matchesCategory = category ? book.category === category : true;
+        const matchesSearch = searchTerm ? book.title.toLowerCase().includes(searchTerm.toLowerCase()) : true;
+        return matchesCategory && matchesSearch;
+    });
 
-    // Filter by category
-    if (category) {
-        filteredBooks = filteredBooks.filter(book => book.category.toLowerCase() === category.toLowerCase());
-    }
-
-    // Filter by search term (title or ID)
-    if (searchTerm) {
-        filteredBooks = filteredBooks.filter(book => {
-            const searchTermLower = searchTerm.toLowerCase();
-            return book.title.toLowerCase().includes(searchTermLower) || book.id.toString() === searchTermLower;
-        });
-    }
-
-    // Display filtered books
     filteredBooks.forEach(book => {
         const bookElement = createBookElement(book);
         bookContainer.appendChild(bookElement);
+    });
+}
+
+// Function to add event listeners to genre buttons
+function addGenreEventListeners() {
+    const genreButtons = document.querySelectorAll('.genre-button');
+    genreButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const genre = button.dataset.genre;
+            displayBooks(genre); // Display books based on selected genre
+        });
     });
 }
 
@@ -102,23 +106,23 @@ function displayBooks(category = '', searchTerm = '') {
 const searchInput = document.getElementById('searchInput');
 searchInput.addEventListener('input', () => {
     const searchTerm = searchInput.value.trim();
-    displayBooks('', searchTerm);
+    displayBooks('', searchTerm); // Display books based on search term
 });
 
 // Favorite book functionality
 function toggleFavorite(bookId) {
-    const bookIndex = books.findIndex(book => book.id === bookId);
-    if (bookIndex !== -1) {
-        books[bookIndex].favorite = !books[bookIndex].favorite;
+    const book = books.find(book => book.id === bookId);
+    if (book) {
+        book.favorite = !book.favorite;
         displayBooks();
     }
 }
 
 // Bookmark page functionality
 function bookmarkPage(bookId, pageNumber) {
-    const bookIndex = books.findIndex(book => book.id === bookId);
-    if (bookIndex !== -1) {
-        books[bookIndex].bookmarkedPage = pageNumber;
+    const book = books.find(book => book.id === bookId);
+    if (book) {
+        book.bookmarkedPage = pageNumber;
         displayBooks();
     }
 }

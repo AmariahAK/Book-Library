@@ -24,5 +24,39 @@ const books = [
     { title: "The Notebook", description: "Tale of everlasting love.", category: "Romance", imageUrl: "images/The Notebook.jpeg" }
 ];
 
-// Exporting the books array
-module.exports = books;
+// Function to display books based on category
+function displayBooks(category = '') {
+    const bookContainer = document.getElementById('book-container');
+    bookContainer.innerHTML = ''; // Clear previous books
+
+    const filteredBooks = category ? books.filter(book => book.category === category) : books;
+
+    filteredBooks.forEach(book => {
+        const bookElement = createBookElement(book);
+        bookContainer.appendChild(bookElement);
+    });
+}
+
+// Function to create a book element
+function createBookElement(book) {
+    const bookElement = document.createElement('div');
+    bookElement.classList.add('book');
+
+    const img = document.createElement('img');
+    img.src = book.imageUrl;
+    img.alt = book.title;
+    bookElement.appendChild(img);
+
+    const title = document.createElement('h3');
+    title.textContent = book.title;
+    bookElement.appendChild(title);
+
+    const description = document.createElement('p');
+    description.textContent = book.description;
+    bookElement.appendChild(description);
+
+    return bookElement;
+}
+
+// Initial display of all books
+displayBooks(); // Display all books by default
