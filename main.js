@@ -1,6 +1,6 @@
 // Global Constants
 const BASE_URL = 'https://www.googleapis.com/books/v1';
-const API_KEY = 'AIzaSyBrl0C4kxsDXomgBBpbEduv2ZvUZBH6CmQE';
+const API_KEY = 'AIzaSyDREw30aFfJweL9yMTjVPcSN6-xdmqkoNE'; 
 
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -87,7 +87,7 @@ function createBookElement(book) {
 
     // Create and append favorite button
     const favoriteButton = document.createElement('button');
-    favoriteButton.textContent = 'Add Favorite';
+    favoriteButton.textContent = 'Favorite';
     favoriteButton.addEventListener('click', () => {
         toggleFavorite(book.id);
     });

@@ -11,45 +11,30 @@
     <!-- Include Axios for HTTP requests -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <!-- Main JavaScript file -->
+    <!-- External JavaScript file -->
     <script src="main.js" defer></script>
 
     <style>
-        /* General styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f7f6;
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
+        /* CSS for button spacing and dropdowns */
         header {
-            background-color: #483d8b;
-            color: #fff;
-            padding: 20px;
-            text-align: center;
-            width: 100%;
-        }
-
-        nav {
-            background-color: #6a5acd;
-            padding: 10px;
-            text-align: center;
-            width: 100%;
-            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 20px;
+            background-color: #483d8b;
+            color: #fff;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #6a5acd;
+            padding: 10px;
+        }
+
+        nav button {
+            margin-right: 10px;
         }
 
         .dropdown-content {
@@ -59,8 +44,6 @@
             min-width: 160px;
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
-            top: 100%;
-            left: 0;
         }
 
         .dropdown-content a {
@@ -74,61 +57,13 @@
             background-color: #f1f1f1;
         }
 
-        .search-bar {
+        #searchInput {
             display: none;
-            align-items: center;
-            margin-bottom: 10px; /* Added margin to separate from buttons */
-        }
-
-        button {
-            padding: 10px 20px;
-            cursor: pointer;
-            background-color: #483d8b;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #6a5acd;
-        }
-
-        input[type="text"],
-        textarea,
-        select {
-            width: 300px;
-            padding: 10px;
-            margin-bottom: 10px;
+            width: 200px;
+            padding: 8px;
+            margin-right: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        /* Book styles */
-        .book {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 20px;
-            width: 300px;
-            background-color: #fff;
-        }
-
-        .book img {
-            width: 100%;
-            height: auto;
-            margin-bottom: 10px;
-        }
-
-        .book-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .book-actions {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
     </style>
 </head>
@@ -137,101 +72,130 @@
     <!-- Header -->
     <header>
         <h1>Book Library</h1>
+        <button onclick="toggleSearchBar()">Search</button>
     </header>
 
-    <!-- Navigation -->
+    <!-- Navigation menu -->
     <nav>
-        <!-- Add Book Dropdown Menu (aligned to the left) -->
-        <div class="add-book-dropdown">
-            <button onclick="toggleAddBookDropdown()">Add Book</button>
-            <div class="dropdown-content" id="addBookDropdownContent">
-                <label for="titleInput">Title:</label>
-                <input type="text" id="titleInput"><br>
-                <label for="descriptionInput">Description:</label>
-                <textarea id="descriptionInput"></textarea><br>
-                <label for="categorySelect">Category:</label>
-                <select id="categorySelect">
-                    <option value="kids-books">Kids Books</option>
-                    <option value="musicals">Musicals</option>
-                    <option value="action">Action</option>
-                    <option value="fantasy">Fantasy</option>
-                    <option value="horror">Horror</option>
-                    <option value="psychological">Psychological</option>
-                    <option value="thriller">Thriller</option>
-                    <option value="romance">Romance</option>
-                    <option value="self-help">Self Help</option>
-                    <option value="science-fiction">Science Fiction</option>
-                    <option value="mystery">Mystery</option>
-                    <option value="historical-fiction">Historical Fiction</option>
-                    <option value="biography">Biography</option>
-                    <option value="comics">Comics</option>
-                </select><br>
-                <label for="imageInput">Image URL:</label>
-                <input type="text" id="imageInput"><br>
-                <button onclick="addNewBook()">Add Book</button>
+        <!-- Genres dropdown -->
+        <div>
+            <button onclick="toggleDropdown('genreDropdown')">Genres</button>
+            <div id="genreDropdown" class="dropdown-content">
+                <a href="#" onclick="displayCategory('kids-books')">Kids Books</a>
+                <a href="#" onclick="displayCategory('musicals')">Musicals</a>
+                <a href="#" onclick="displayCategory('action')">Action</a>
+                <a href="#" onclick="displayCategory('fantasy')">Fantasy</a>
+                <a href="#" onclick="displayCategory('horror')">Horror</a>
+                <a href="#" onclick="displayCategory('psychological')">Psychological</a>
+                <a href="#" onclick="displayCategory('thriller')">Thriller</a>
+                <a href="#" onclick="displayCategory('romance')">Romance</a>
+                <a href="#" onclick="displayCategory('self-help')">Self Help</a>
+                <a href="#" onclick="displayCategory('science-fiction')">Science Fiction</a>
+                <a href="#" onclick="displayCategory('mystery')">Mystery</a>
+                <a href="#" onclick="displayCategory('historical-fiction')">Historical Fiction</a>
+                <a href="#" onclick="displayCategory('biography')">Biography</a>
+                <a href="#" onclick="displayCategory('comics')">Comics</a>
             </div>
         </div>
 
-        <!-- Genre Dropdown Menu (aligned to the center) -->
-        <div class="genre-dropdown">
-            <button onclick="toggleGenreDropdown()">Genres</button>
-            <div class="dropdown-content" id="genreDropdownContent">
-                <a href="#" onclick="displayBooks('kids-books')">Kids Books</a>
-                <a href="#" onclick="displayBooks('musicals')">Musicals</a>
-                <a href="#" onclick="displayBooks('action')">Action</a>
-                <a href="#" onclick="displayBooks('fantasy')">Fantasy</a>
-                <a href="#" onclick="displayBooks('horror')">Horror</a>
-                <a href="#" onclick="displayBooks('psychological')">Psychological</a>
-                <a href="#" onclick="displayBooks('thriller')">Thriller</a>
-                <a href="#" onclick="displayBooks('romance')">Romance</a>
-                <a href="#" onclick="displayBooks('self-help')">Self Help</a>
-                <a href="#" onclick="displayBooks('science-fiction')">Science Fiction</a>
-                <a href="#" onclick="displayBooks('mystery')">Mystery</a>
-                <a href="#" onclick="displayBooks('historical-fiction')">Historical Fiction</a>
-                <a href="#" onclick="displayBooks('biography')">Biography</a>
-                <a href="#" onclick="displayBooks('comics')">Comics</a>
+        <!-- Add Book dropdown -->
+        <div>
+            <button onclick="toggleDropdown('addBookDropdown')">Add Book</button>
+            <div id="addBookDropdown" class="dropdown-content">
+                <form id="addBookForm">
+                    <label for="titleInput">Title:</label>
+                    <input type="text" id="titleInput"><br>
+                    <label for="descriptionInput">Description:</label>
+                    <textarea id="descriptionInput"></textarea><br>
+                    <label for="categorySelect">Category:</label>
+                    <select id="categorySelect">
+                        <option value="kids-books">Kids Books</option>
+                        <option value="musicals">Musicals</option>
+                        <option value="action">Action</option>
+                        <option value="fantasy">Fantasy</option>
+                        <option value="horror">Horror</option>
+                        <option value="psychological">Psychological</option>
+                        <option value="thriller">Thriller</option>
+                        <option value="romance">Romance</option>
+                        <option value="self-help">Self Help</option>
+                        <option value="science-fiction">Science Fiction</option>
+                        <option value="mystery">Mystery</option>
+                        <option value="historical-fiction">Historical Fiction</option>
+                        <option value="biography">Biography</option>
+                        <option value="comics">Comics</option>
+                    </select><br>
+                    <label for="imageInput">Image URL:</label>
+                    <input type="text" id="imageInput"><br>
+                    <button type="button" onclick="addNewBook()">Add Book</button>
+                </form>
             </div>
         </div>
 
-        <!-- Search Button -->
-        <button id="searchBtn" onclick="toggleSearchBar()">Search</button>
+        <!-- Search input (initially hidden) -->
+        <input type="text" id="searchInput" placeholder="Search..." oninput="handleSearch()">
     </nav>
 
-    <!-- Search Bar -->
-    <div class="search-bar" id="searchBar">
-        <label for="searchInput">Search:</label>
-        <input type="text" id="searchInput" oninput="performSearch()">
-    </div>
-
     <!-- Main content area -->
-    <div class="container" id="book-container">
-        <!-- Books will be dynamically populated here -->
+    <div class="container">
+        <!-- Book container -->
+        <div id="book-container"></div>
     </div>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Book Library</p>
-    </footer>
-
-    <!-- Main JavaScript file -->
-    <script src="main.js"></script>
 
     <script>
-        // Function to perform search based on input text
-        function performSearch() {
-            const searchInput = document.getElementById('searchInput').value.trim();
-            displayBooks(searchInput); // Display books based on search input
+        // Function to toggle dropdown visibility
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown.style.display === 'block') {
+                dropdown.style.display = 'none';
+            } else {
+                dropdown.style.display = 'block';
+            }
         }
 
-        // Function to toggle visibility of search bar
+        // Function to toggle search bar visibility
         function toggleSearchBar() {
-            const searchBar = document.getElementById('searchBar');
-            if (searchBar.style.display === 'none') {
-                searchBar.style.display = 'flex';
+            const searchBar = document.getElementById('searchInput');
+            if (searchBar.style.display === 'none' || searchBar.style.display === '') {
+                searchBar.style.display = 'block';
             } else {
                 searchBar.style.display = 'none';
             }
         }
+        
+        // Function to handle search input
+        function handleSearch() {
+            const searchTerm = document.getElementById('searchInput').value;
+            // Implement search functionality here (e.g., call API to search books)
+            console.log('Searching for:', searchTerm);
+        }
+
+        // Function to display books based on category
+        function displayCategory(category) {
+            // Implement display books by category (e.g., call API with category parameter)
+            console.log('Displaying books for category:', category);
+        }
+
+        // Function to add a new book
+        function addNewBook() {
+            // Implement adding a new book (e.g., collect form data and make API call)
+            console.log('Adding a new book...');
+            const title = document.getElementById('titleInput').value;
+            const description = document.getElementById('descriptionInput').value;
+            const category = document.getElementById('categorySelect').value;
+            const imageUrl = document.getElementById('imageInput').value;
+
+            // Example: Use Axios to post data to server or perform other actions
+            // axios.post('/books', { title, description, category, imageUrl })
+            //     .then(response => {
+            //         console.log('New book added:', response.data);
+            //         // Optionally, refresh book display or show success message
+            //     })
+            //     .catch(error => {
+            //         console.error('Error adding new book:', error);
+            //         // Handle error display or logging
+            //     });
+        }
     </script>
+
 </body>
 </html>
