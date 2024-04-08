@@ -1,3 +1,4 @@
+
 # Book Library Web Application
 
 Welcome to the Book Library Web Application! This project is a Single Page Application (SPA) designed to provide users with a seamless experience for searching and managing their favorite books. Leveraging the Google Books API, users can explore a vast collection of books, add them to their favorites, and perform various interactions within the application.

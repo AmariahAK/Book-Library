@@ -1,9 +1,12 @@
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Call functions to set up event listeners and initial display
     displayBooks(); // Display all books initially
     addGenreEventListeners(); // Add event listeners to genre buttons
 });
+
+// Google Books API base URL and API key
+const BASE_URL = 'https://www.googleapis.com/books/v1';
+const API_KEY = 'AIzaSyBrl0C4kxsDXomgBBpbEduv2ZvUZBH6CmQE'; 
 
 // Function to display books based on category
 async function displayBooks(category = '') {
@@ -16,18 +19,19 @@ async function displayBooks(category = '') {
 
         booksContainer.innerHTML = ''; // Clear previous books
         
-        // Fetch books data from the server
-        const response = await fetch('http://localhost:3000/books');
+        // Construct the API URL based on category
+        const url = category ? `${BASE_URL}/volumes?q=subject:${category}&key=${API_KEY}` : `${BASE_URL}/volumes?key=${API_KEY}`;
+        
+        // Fetch books data from the Google Books API
+        const response = await fetch(url);
         if (!response.ok) {
             throw new Error('Failed to fetch books');
         }
-        const books = await response.json();
+        const data = await response.json();
+        const books = data.items || [];
 
-        // Filter books by category if provided
-        const filteredBooks = category ? books.filter(book => book.category === category) : books;
-
-        // Iterate over filtered books and create book elements
-        filteredBooks.forEach(book => {
+        // Iterate over fetched books and create book elements
+        books.forEach(book => {
             const bookElement = createBookElement(book);
             booksContainer.appendChild(bookElement);
         });
@@ -41,21 +45,26 @@ function createBookElement(book) {
     const bookElement = document.createElement('div');
     bookElement.classList.add('book');
 
+    // Extract book details from the Google Books API response
+    const volumeInfo = book.volumeInfo || {};
+    const { title, description, imageLinks } = volumeInfo;
+    const imageUrl = imageLinks ? imageLinks.thumbnail : '';
+
     // Create and append book image
     const img = document.createElement('img');
-    img.src = book.imageUrl;
-    img.alt = book.title;
+    img.src = imageUrl;
+    img.alt = title || 'Book Image';
     bookElement.appendChild(img);
 
     // Create and append book title
-    const title = document.createElement('h3');
-    title.textContent = book.title;
-    bookElement.appendChild(title);
+    const bookTitle = document.createElement('h3');
+    bookTitle.textContent = title || 'Untitled';
+    bookElement.appendChild(bookTitle);
 
     // Create and append book description
-    const description = document.createElement('p');
-    description.textContent = book.description;
-    bookElement.appendChild(description);
+    const bookDescription = document.createElement('p');
+    bookDescription.textContent = description || 'No description available';
+    bookElement.appendChild(bookDescription);
 
     // Create and append like button
     const likeButton = document.createElement('button');
@@ -78,7 +87,7 @@ function createBookElement(book) {
 
     // Create and append favorite button
     const favoriteButton = document.createElement('button');
-    favoriteButton.textContent = book.favorite ? 'Remove Favorite' : 'Add Favorite';
+    favoriteButton.textContent = 'Add Favorite';
     favoriteButton.addEventListener('click', () => {
         toggleFavorite(book.id);
     });
@@ -109,101 +118,41 @@ function addGenreEventListeners() {
     });
 }
 
-// Function to like a book
-async function likeBook(bookId) {
+// Function to toggle the favorite status of a book
+async function toggleFavorite(bookId) {
     try {
-        const response = await fetch(`http://localhost:3000/books/${bookId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch book details');
-        }
-        const book = await response.json();
-        book.likes++;
-        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(book)
-        });
-        if (!updateResponse.ok) {
-            throw new Error('Failed to update book');
-        }
-        displayBooks(); // Refresh displayed books
+        // Implement your favorite toggle logic here
+        console.log(`Toggle favorite for book with ID ${bookId}`);
     } catch (error) {
-        console.error('Error liking book:', error);
+        console.error('Error toggling favorite:', error);
     }
 }
 
 // Function to add a comment to a book
 async function addComment(bookId, comment) {
     try {
-        const response = await fetch(`http://localhost:3000/books/${bookId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch book details');
-        }
-        const book = await response.json();
-        book.comments.push(comment);
-        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(book)
-        });
-        if (!updateResponse.ok) {
-            throw new Error('Failed to add comment');
-        }
-        displayBooks(); // Refresh displayed books
+        // Implement your comment adding logic here
+        console.log(`Add comment "${comment}" to book with ID ${bookId}`);
     } catch (error) {
         console.error('Error adding comment:', error);
     }
 }
 
-// Function to toggle the favorite status of a book
-async function toggleFavorite(bookId) {
+// Function to like a book
+async function likeBook(bookId) {
     try {
-        const response = await fetch(`http://localhost:3000/books/${bookId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch book details');
-        }
-        const book = await response.json();
-        book.favorite = !book.favorite;
-        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(book)
-        });
-        if (!updateResponse.ok) {
-            throw new Error('Failed to update book');
-        }
-        displayBooks(); // Refresh displayed books
+        // Implement your like functionality here
+        console.log(`Like book with ID ${bookId}`);
     } catch (error) {
-        console.error('Error toggling favorite:', error);
+        console.error('Error liking book:', error);
     }
 }
 
 // Function to bookmark a page in a book
 async function bookmarkPage(bookId, pageNumber) {
     try {
-        const response = await fetch(`http://localhost:3000/books/${bookId}`);
-        if (!response.ok) {
-            throw new Error('Failed to fetch book details');
-        }
-        const book = await response.json();
-        book.bookmarkedPage = pageNumber;
-        const updateResponse = await fetch(`http://localhost:3000/books/${bookId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(book)
-        });
-        if (!updateResponse.ok) {
-            throw new Error('Failed to update bookmark');
-        }
-        displayBooks(); // Refresh displayed books
+        // Implement your bookmarking functionality here
+        console.log(`Bookmark page ${pageNumber} of book with ID ${bookId}`);
     } catch (error) {
         console.error('Error bookmarking page:', error);
     }

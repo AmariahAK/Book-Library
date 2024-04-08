@@ -6,14 +6,15 @@
     <title>Book Library</title>
     
     <!-- Link to external CSS file -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="style.css">
 
     <!-- Include Axios for HTTP requests -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <!-- External JavaScript files -->
-    <script src="script.js" defer></script>
+    <script src="scripts.js" defer></script>
     <script src="app.js" defer></script>
+
 </head>
 <body>
 
@@ -21,7 +22,7 @@
     <header>
         <h1>Book Library</h1>
         <nav>
-            <!-- Make sure these onclick functions are defined in script.js or app.js -->
+            <!-- Genre buttons with onclick events -->
             <a href="#" onclick="displayCategory('kids-books')">Kids Books</a>
             <a href="#" onclick="displayCategory('musicals')">Musicals</a>
             <a href="#" onclick="displayCategory('action')">Action</a>
@@ -31,6 +32,11 @@
             <a href="#" onclick="displayCategory('thriller')">Thriller</a>
             <a href="#" onclick="displayCategory('romance')">Romance</a>
             <a href="#" onclick="displayCategory('self-help')">Self Help</a>
+            <a href="#" onclick="displayCategory('science-fiction')">Science Fiction</a>
+            <a href="#" onclick="displayCategory('mystery')">Mystery</a>
+            <a href="#" onclick="displayCategory('historical-fiction')">Historical Fiction</a>
+            <a href="#" onclick="displayCategory('biography')">Biography</a>
+            <a href="#" onclick="displayCategory('comics')">Comics</a>
         </nav>
     </header>
 
@@ -77,6 +83,11 @@
                 <option value="thriller">Thriller</option>
                 <option value="romance">Romance</option>
                 <option value="self-help">Self Help</option>
+                <option value="science-fiction">Science Fiction</option>
+                <option value="mystery">Mystery</option>
+                <option value="historical-fiction">Historical Fiction</option>
+                <option value="biography">Biography</option>
+                <option value="comics">Comics</option>
             </select><br>
             <label for="imageInput">Image URL:</label>
             <input type="text" id="imageInput"><br>
