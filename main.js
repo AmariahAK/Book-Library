@@ -1,15 +1,15 @@
+// Global Constants
+const BASE_URL = 'https://www.googleapis.com/books/v1';
+const API_KEY = 'YOUR_API_KEY'; // Replace 'YOUR_API_KEY' with your actual Google Books API key
+
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
     displayBooks(); // Display all books initially
     addGenreEventListeners(); // Add event listeners to genre buttons
 });
 
-// Google Books API base URL and API key
-const BASE_URL = 'https://www.googleapis.com/books/v1';
-const API_KEY = 'AIzaSyBrl0C4kxsDXomgBBpbEduv2ZvUZBH6CmQE'; 
-
-// Function to display books based on category
-async function displayBooks(category = '') {
+// Function to display books based on category or search query
+async function displayBooks(query = '') {
     try {
         const booksContainer = document.getElementById('book-container');
         if (!booksContainer) {
@@ -18,10 +18,15 @@ async function displayBooks(category = '') {
         }
 
         booksContainer.innerHTML = ''; // Clear previous books
-        
-        // Construct the API URL based on category
-        const url = category ? `${BASE_URL}/volumes?q=subject:${category}&key=${API_KEY}` : `${BASE_URL}/volumes?key=${API_KEY}`;
-        
+
+        // Construct the API URL based on category or search query
+        let url;
+        if (query) {
+            url = `${BASE_URL}/volumes?q=${encodeURIComponent(query)}&key=${API_KEY}`;
+        } else {
+            url = `${BASE_URL}/volumes?key=${API_KEY}`;
+        }
+
         // Fetch books data from the Google Books API
         const response = await fetch(url);
         if (!response.ok) {
@@ -66,36 +71,25 @@ function createBookElement(book) {
     bookDescription.textContent = description || 'No description available';
     bookElement.appendChild(bookDescription);
 
-    // Create and append like button
+    // Create and append like button (displayed as heart icon)
     const likeButton = document.createElement('button');
-    likeButton.textContent = 'Like';
+    likeButton.innerHTML = '&hearts;'; // Heart icon
     likeButton.addEventListener('click', () => {
         likeBook(book.id);
     });
     bookElement.appendChild(likeButton);
 
-    // Create and append comment button
-    const commentButton = document.createElement('button');
-    commentButton.textContent = 'Comment';
-    commentButton.addEventListener('click', () => {
-        const comment = prompt('Enter your comment:');
-        if (comment) {
-            addComment(book.id, comment);
-        }
-    });
-    bookElement.appendChild(commentButton);
-
-    // Create and append favorite button
+    // Create and append favorite button (displayed as star icon)
     const favoriteButton = document.createElement('button');
-    favoriteButton.textContent = 'Add Favorite';
+    favoriteButton.innerHTML = '&#9733;'; // Star icon
     favoriteButton.addEventListener('click', () => {
         toggleFavorite(book.id);
     });
     bookElement.appendChild(favoriteButton);
 
-    // Create and append bookmark button
+    // Create and append bookmark button (displayed as bookmark icon)
     const bookmarkButton = document.createElement('button');
-    bookmarkButton.textContent = 'Bookmark';
+    bookmarkButton.innerHTML = '&#128278;'; // Bookmark icon
     bookmarkButton.addEventListener('click', () => {
         const pageNumber = prompt('Enter the page number to bookmark:');
         if (pageNumber && !isNaN(pageNumber)) {
@@ -104,10 +98,25 @@ function createBookElement(book) {
     });
     bookElement.appendChild(bookmarkButton);
 
+    // Append comment input and button
+    const commentInput = document.createElement('textarea');
+    commentInput.placeholder = 'Add your comment...';
+    bookElement.appendChild(commentInput);
+
+    const commentButton = document.createElement('button');
+    commentButton.textContent = 'Comment';
+    commentButton.addEventListener('click', () => {
+        const comment = commentInput.value.trim();
+        if (comment) {
+            addComment(book.id, comment);
+        }
+    });
+    bookElement.appendChild(commentButton);
+
     return bookElement;
 }
 
-// Function to handle clicking genre buttons
+// Function to handle clicking genre buttons and search
 function addGenreEventListeners() {
     const genreButtons = document.querySelectorAll('.genre-button');
     genreButtons.forEach(button => {
@@ -116,6 +125,49 @@ function addGenreEventListeners() {
             displayBooks(genre); // Display books based on selected genre
         });
     });
+}
+
+// Function to toggle visibility of add book dropdown content
+function toggleAddBookDropdown() {
+    const addBookDropdownContent = document.getElementById('addBookDropdownContent');
+    if (!addBookDropdownContent) {
+        console.error('Add book dropdown content not found');
+        return;
+    }
+
+    if (addBookDropdownContent.style.display === 'block') {
+        addBookDropdownContent.style.display = 'none';
+    } else {
+        addBookDropdownContent.style.display = 'block';
+    }
+}
+
+// Function to perform search based on input text
+function performSearch() {
+    const searchInput = document.getElementById('searchInput').value.trim();
+    displayBooks(searchInput); // Display books based on search input
+}
+
+// Function to toggle visibility of genre dropdown content
+function toggleGenreDropdown() {
+    const dropdownContent = document.getElementById('genreDropdownContent');
+    if (dropdownContent.style.display === 'block') {
+        dropdownContent.style.display = 'none';
+    } else {
+        dropdownContent.style.display = 'block';
+    }
+}
+
+// Function to add a new book
+async function addNewBook() {
+    const titleInput = document.getElementById('titleInput').value.trim();
+    const descriptionInput = document.getElementById('descriptionInput').value.trim();
+    const categorySelect = document.getElementById('categorySelect').value;
+    const imageInput = document.getElementById('imageInput').value.trim();
+
+    // Implement logic to add a new book using input values
+    console.log('Adding new book:', { title: titleInput, description: descriptionInput, category: categorySelect, imageUrl: imageInput });
+    // Example: Make an API request to add the book to your library
 }
 
 // Function to toggle the favorite status of a book
