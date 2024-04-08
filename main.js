@@ -98,21 +98,6 @@ function createBookElement(book) {
     });
     bookElement.appendChild(bookmarkButton);
 
-    // Append comment input and button
-    const commentInput = document.createElement('textarea');
-    commentInput.placeholder = 'Add your comment...';
-    bookElement.appendChild(commentInput);
-
-    const commentButton = document.createElement('button');
-    commentButton.textContent = 'Comment';
-    commentButton.addEventListener('click', () => {
-        const comment = commentInput.value.trim();
-        if (comment) {
-            addComment(book.id, comment);
-        }
-    });
-    bookElement.appendChild(commentButton);
-
     return bookElement;
 }
 
@@ -135,10 +120,10 @@ function toggleAddBookDropdown() {
         return;
     }
 
-    if (addBookDropdownContent.style.display === 'block') {
+    if (addBookDropdownContent.style.display === 'flex') {
         addBookDropdownContent.style.display = 'none';
     } else {
-        addBookDropdownContent.style.display = 'block';
+        addBookDropdownContent.style.display = 'flex';
     }
 }
 
@@ -151,6 +136,11 @@ function performSearch() {
 // Function to toggle visibility of genre dropdown content
 function toggleGenreDropdown() {
     const dropdownContent = document.getElementById('genreDropdownContent');
+    if (!dropdownContent) {
+        console.error('Genre dropdown content not found');
+        return;
+    }
+
     if (dropdownContent.style.display === 'block') {
         dropdownContent.style.display = 'none';
     } else {
