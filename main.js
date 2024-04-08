@@ -1,6 +1,6 @@
 // Global Constants
 const BASE_URL = 'https://www.googleapis.com/books/v1';
-const API_KEY = 'AIzaSyDREw30aFfJweL9yMTjVPcSN6-xdmqkoNE'; 
+const API_KEY = 'YOUR_GOOGLE_BOOKS_API_KEY'; // Replace 'YOUR_GOOGLE_BOOKS_API_KEY' with your actual API key
 
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,6 +37,7 @@ async function displayBooks(category = '') {
         });
     } catch (error) {
         console.error('Error displaying books:', error);
+        alert('Failed to fetch books. Please try again later.');
     }
 }
 
@@ -125,6 +126,7 @@ async function toggleFavorite(bookId) {
         console.log(`Toggle favorite for book with ID ${bookId}`);
     } catch (error) {
         console.error('Error toggling favorite:', error);
+        alert('Failed to toggle favorite. Please try again.');
     }
 }
 
@@ -133,8 +135,10 @@ async function addComment(bookId, comment) {
     try {
         // Implement your comment adding logic here
         console.log(`Add comment "${comment}" to book with ID ${bookId}`);
+        alert('Comment added successfully!');
     } catch (error) {
         console.error('Error adding comment:', error);
+        alert('Failed to add comment. Please try again.');
     }
 }
 
@@ -143,8 +147,10 @@ async function likeBook(bookId) {
     try {
         // Implement your like functionality here
         console.log(`Like book with ID ${bookId}`);
+        alert('Book liked successfully!');
     } catch (error) {
         console.error('Error liking book:', error);
+        alert('Failed to like book. Please try again.');
     }
 }
 
@@ -153,7 +159,9 @@ async function bookmarkPage(bookId, pageNumber) {
     try {
         // Implement your bookmarking functionality here
         console.log(`Bookmark page ${pageNumber} of book with ID ${bookId}`);
+        alert(`Page ${pageNumber} bookmarked successfully!`);
     } catch (error) {
         console.error('Error bookmarking page:', error);
+        alert('Failed to bookmark page. Please try again.');
     }
 }
