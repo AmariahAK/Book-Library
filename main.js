@@ -1,6 +1,6 @@
 // Global Constants
 const BASE_URL = 'https://www.googleapis.com/books/v1';
-const API_KEY = 'YOUR_API_KEY'; // Replace 'YOUR_API_KEY' with your actual Google Books API key
+const API_KEY = 'AIzaSyBrl0C4kxsDXomgBBpbEduv2ZvUZBH6CmQE';
 
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     addGenreEventListeners(); // Add event listeners to genre buttons
 });
 
-// Function to display books based on category or search query
-async function displayBooks(query = '') {
+// Function to display books based on category
+async function displayBooks(category = '') {
     try {
         const booksContainer = document.getElementById('book-container');
         if (!booksContainer) {
@@ -18,15 +18,10 @@ async function displayBooks(query = '') {
         }
 
         booksContainer.innerHTML = ''; // Clear previous books
-
-        // Construct the API URL based on category or search query
-        let url;
-        if (query) {
-            url = `${BASE_URL}/volumes?q=${encodeURIComponent(query)}&key=${API_KEY}`;
-        } else {
-            url = `${BASE_URL}/volumes?key=${API_KEY}`;
-        }
-
+        
+        // Construct the API URL based on category
+        const url = category ? `${BASE_URL}/volumes?q=subject:${category}&key=${API_KEY}` : `${BASE_URL}/volumes?key=${API_KEY}`;
+        
         // Fetch books data from the Google Books API
         const response = await fetch(url);
         if (!response.ok) {
@@ -71,25 +66,36 @@ function createBookElement(book) {
     bookDescription.textContent = description || 'No description available';
     bookElement.appendChild(bookDescription);
 
-    // Create and append like button (displayed as heart icon)
+    // Create and append like button
     const likeButton = document.createElement('button');
-    likeButton.innerHTML = '&hearts;'; // Heart icon
+    likeButton.textContent = 'Like';
     likeButton.addEventListener('click', () => {
         likeBook(book.id);
     });
     bookElement.appendChild(likeButton);
 
-    // Create and append favorite button (displayed as star icon)
+    // Create and append comment button
+    const commentButton = document.createElement('button');
+    commentButton.textContent = 'Comment';
+    commentButton.addEventListener('click', () => {
+        const comment = prompt('Enter your comment:');
+        if (comment) {
+            addComment(book.id, comment);
+        }
+    });
+    bookElement.appendChild(commentButton);
+
+    // Create and append favorite button
     const favoriteButton = document.createElement('button');
-    favoriteButton.innerHTML = '&#9733;'; // Star icon
+    favoriteButton.textContent = 'Add Favorite';
     favoriteButton.addEventListener('click', () => {
         toggleFavorite(book.id);
     });
     bookElement.appendChild(favoriteButton);
 
-    // Create and append bookmark button (displayed as bookmark icon)
+    // Create and append bookmark button
     const bookmarkButton = document.createElement('button');
-    bookmarkButton.innerHTML = '&#128278;'; // Bookmark icon
+    bookmarkButton.textContent = 'Bookmark';
     bookmarkButton.addEventListener('click', () => {
         const pageNumber = prompt('Enter the page number to bookmark:');
         if (pageNumber && !isNaN(pageNumber)) {
@@ -101,7 +107,7 @@ function createBookElement(book) {
     return bookElement;
 }
 
-// Function to handle clicking genre buttons and search
+// Function to handle clicking genre buttons
 function addGenreEventListeners() {
     const genreButtons = document.querySelectorAll('.genre-button');
     genreButtons.forEach(button => {
@@ -110,54 +116,6 @@ function addGenreEventListeners() {
             displayBooks(genre); // Display books based on selected genre
         });
     });
-}
-
-// Function to toggle visibility of add book dropdown content
-function toggleAddBookDropdown() {
-    const addBookDropdownContent = document.getElementById('addBookDropdownContent');
-    if (!addBookDropdownContent) {
-        console.error('Add book dropdown content not found');
-        return;
-    }
-
-    if (addBookDropdownContent.style.display === 'flex') {
-        addBookDropdownContent.style.display = 'none';
-    } else {
-        addBookDropdownContent.style.display = 'flex';
-    }
-}
-
-// Function to perform search based on input text
-function performSearch() {
-    const searchInput = document.getElementById('searchInput').value.trim();
-    displayBooks(searchInput); // Display books based on search input
-}
-
-// Function to toggle visibility of genre dropdown content
-function toggleGenreDropdown() {
-    const dropdownContent = document.getElementById('genreDropdownContent');
-    if (!dropdownContent) {
-        console.error('Genre dropdown content not found');
-        return;
-    }
-
-    if (dropdownContent.style.display === 'block') {
-        dropdownContent.style.display = 'none';
-    } else {
-        dropdownContent.style.display = 'block';
-    }
-}
-
-// Function to add a new book
-async function addNewBook() {
-    const titleInput = document.getElementById('titleInput').value.trim();
-    const descriptionInput = document.getElementById('descriptionInput').value.trim();
-    const categorySelect = document.getElementById('categorySelect').value;
-    const imageInput = document.getElementById('imageInput').value.trim();
-
-    // Implement logic to add a new book using input values
-    console.log('Adding new book:', { title: titleInput, description: descriptionInput, category: categorySelect, imageUrl: imageInput });
-    // Example: Make an API request to add the book to your library
 }
 
 // Function to toggle the favorite status of a book
