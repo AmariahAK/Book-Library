@@ -1,6 +1,6 @@
 // Global Constants
 const BASE_URL = 'https://www.googleapis.com/books/v1';
-const API_KEY = 'YOUR_GOOGLE_BOOKS_API_KEY'; // Replace 'YOUR_GOOGLE_BOOKS_API_KEY' with your actual API key
+const API_KEY = 'AIzaSyDREw30aFfJweL9yMTjVPcSN6-xdmqkoNE'; 
 
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
