@@ -1,6 +1,5 @@
 // Global Constants
-const BASE_URL = 'https://www.googleapis.com/books/v1';
-const API_KEY = 'AIzaSyDREw30aFfJweL9yMTjVPcSN6-xdmqkoNE'; 
+const BASE_URL = 'https://simple-books-api.glitch.me';
 
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -20,15 +19,16 @@ async function displayBooks(category = '') {
         booksContainer.innerHTML = ''; // Clear previous books
         
         // Construct the API URL based on category
-        const url = category ? `${BASE_URL}/volumes?q=subject:${category}&key=${API_KEY}` : `${BASE_URL}/volumes?key=${API_KEY}`;
+        const apiUrl = category ? `${BASE_URL}/books?category=${category}` : `${BASE_URL}/books`;
+        const proxyUrl = 'https://cors-anywhere.herokuapp.com/' + apiUrl; // Prepend with CORS Anywhere proxy URL
         
-        // Fetch books data from the Google Books API
-        const response = await fetch(url);
+        // Fetch books data using the CORS proxy
+        const response = await fetch(proxyUrl);
         if (!response.ok) {
             throw new Error('Failed to fetch books');
         }
         const data = await response.json();
-        const books = data.items || [];
+        const books = data || []; // Assuming books data is an array of book objects
 
         // Iterate over fetched books and create book elements
         books.forEach(book => {
@@ -46,20 +46,12 @@ function createBookElement(book) {
     const bookElement = document.createElement('div');
     bookElement.classList.add('book');
 
-    // Extract book details from the Google Books API response
-    const volumeInfo = book.volumeInfo || {};
-    const { title, description, imageLinks } = volumeInfo;
-    const imageUrl = imageLinks ? imageLinks.thumbnail : '';
-
-    // Create and append book image
-    const img = document.createElement('img');
-    img.src = imageUrl;
-    img.alt = title || 'Book Image';
-    bookElement.appendChild(img);
+    // Extract book details from the book object
+    const { name, description, genre } = book;
 
     // Create and append book title
     const bookTitle = document.createElement('h3');
-    bookTitle.textContent = title || 'Untitled';
+    bookTitle.textContent = name || 'Untitled';
     bookElement.appendChild(bookTitle);
 
     // Create and append book description
@@ -67,11 +59,23 @@ function createBookElement(book) {
     bookDescription.textContent = description || 'No description available';
     bookElement.appendChild(bookDescription);
 
+    // Create and append book genre
+    const bookGenre = document.createElement('p');
+    bookGenre.textContent = `Genre: ${genre || 'Unknown'}`;
+    bookElement.appendChild(bookGenre);
+
+    // Create and append book image (with placeholder)
+    const img = document.createElement('img');
+    img.src = 'https://via.placeholder.com/150'; // Placeholder image URL
+    img.alt = name || 'Book Image';
+    img.style.width = '150px'; // Set image width for consistency
+    bookElement.appendChild(img);
+
     // Create and append like button
     const likeButton = document.createElement('button');
     likeButton.textContent = 'Like';
     likeButton.addEventListener('click', () => {
-        likeBook(book.id);
+        likeBook(book.id); // Assuming book object has an ID property
     });
     bookElement.appendChild(likeButton);
 
@@ -81,7 +85,7 @@ function createBookElement(book) {
     commentButton.addEventListener('click', () => {
         const comment = prompt('Enter your comment:');
         if (comment) {
-            addComment(book.id, comment);
+            addComment(book.id, comment); // Assuming book object has an ID property
         }
     });
     bookElement.appendChild(commentButton);
@@ -90,7 +94,7 @@ function createBookElement(book) {
     const favoriteButton = document.createElement('button');
     favoriteButton.textContent = 'Favorite';
     favoriteButton.addEventListener('click', () => {
-        toggleFavorite(book.id);
+        toggleFavorite(book.id); // Assuming book object has an ID property
     });
     bookElement.appendChild(favoriteButton);
 
@@ -100,7 +104,7 @@ function createBookElement(book) {
     bookmarkButton.addEventListener('click', () => {
         const pageNumber = prompt('Enter the page number to bookmark:');
         if (pageNumber && !isNaN(pageNumber)) {
-            bookmarkPage(book.id, parseInt(pageNumber));
+            bookmarkPage(book.id, parseInt(pageNumber)); // Assuming book object has an ID property
         }
     });
     bookElement.appendChild(bookmarkButton);
