@@ -11,9 +11,10 @@ app.use(express.json());
 // Serve static files (e.g., frontend files)
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API endpoint to get all books
+// API endpoint to get all books or books by genre
 app.get('/books', (req, res) => {
-    const books = readBooksFromDatabase();
+    const { genre } = req.query;
+    const books = readBooksFromDatabase(genre);
     res.json(books);
 });
 
@@ -27,16 +28,31 @@ app.post('/books', (req, res) => {
 });
 
 // Helper function to read books from database file
-function readBooksFromDatabase() {
-    const rawData = fs.readFileSync('db.json');
-    const books = JSON.parse(rawData).books || [];
-    return books;
+function readBooksFromDatabase(genreFilter = null) {
+    try {
+        const rawData = fs.readFileSync('db.json');
+        const books = JSON.parse(rawData).books || [];
+
+        if (genreFilter) {
+            return books.filter(book => book.genre === genreFilter);
+        }
+
+        return books;
+    } catch (error) {
+        console.error('Error reading books from database:', error);
+        return [];
+    }
 }
 
 // Helper function to save books to database file
 function saveBooksToDatabase(books) {
-    const data = JSON.stringify({ books }, null, 2);
-    fs.writeFileSync('db.json', data);
+    try {
+        const data = JSON.stringify({ books }, null, 2);
+        fs.writeFileSync('db.json', data);
+        console.log('Books saved to database successfully.');
+    } catch (error) {
+        console.error('Error saving books to database:', error);
+    }
 }
 
 // Start the server

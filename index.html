@@ -11,9 +11,6 @@
     <!-- Include Axios for HTTP requests -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <!-- External JavaScript file -->
-    <script src="main.js" defer></script>
-
     <style>
         /* CSS for button spacing and dropdowns */
         header {
@@ -58,7 +55,6 @@
         }
 
         #searchInput {
-            display: none;
             width: 200px;
             padding: 8px;
             margin-right: 10px;
@@ -72,7 +68,8 @@
     <!-- Header -->
     <header>
         <h1>Book Library</h1>
-        <button onclick="toggleSearchBar()">Search</button>
+        <input type="text" id="searchInput" placeholder="Search...">
+        <button onclick="searchBooks()">Search</button>
     </header>
 
     <!-- Navigation menu -->
@@ -81,8 +78,8 @@
         <div>
             <button onclick="toggleDropdown('genreDropdown')">Genres</button>
             <div id="genreDropdown" class="dropdown-content">
-                <a href="#" onclick="displayCategory('kids-books')">Kids Books</a>
-                <a href="#" onclick="displayCategory('musicals')">Musicals</a>
+                <a href="#" onclick="displayCategory('kids')">Kids Books</a>
+                <a href="#" onclick="displayCategory('musical')">Musicals</a>
                 <a href="#" onclick="displayCategory('action')">Action</a>
                 <a href="#" onclick="displayCategory('fantasy')">Fantasy</a>
                 <a href="#" onclick="displayCategory('horror')">Horror</a>
@@ -92,7 +89,7 @@
                 <a href="#" onclick="displayCategory('self-help')">Self Help</a>
                 <a href="#" onclick="displayCategory('science-fiction')">Science Fiction</a>
                 <a href="#" onclick="displayCategory('mystery')">Mystery</a>
-                <a href="#" onclick="displayCategory('historical-fiction')">Historical Fiction</a>
+                <a href="#" onclick="displayCategory('historical')">Historical</a>
                 <a href="#" onclick="displayCategory('biography')">Biography</a>
                 <a href="#" onclick="displayCategory('comics')">Comics</a>
             </div>
@@ -102,15 +99,15 @@
         <div>
             <button onclick="toggleDropdown('addBookDropdown')">Add Book</button>
             <div id="addBookDropdown" class="dropdown-content">
-                <form id="addBookForm">
+                <form id="addBookForm" onsubmit="addNewBook(event)">
                     <label for="titleInput">Title:</label>
-                    <input type="text" id="titleInput"><br>
+                    <input type="text" id="titleInput" required><br>
                     <label for="descriptionInput">Description:</label>
-                    <textarea id="descriptionInput"></textarea><br>
+                    <textarea id="descriptionInput" required></textarea><br>
                     <label for="categorySelect">Category:</label>
-                    <select id="categorySelect">
-                        <option value="kids-books">Kids Books</option>
-                        <option value="musicals">Musicals</option>
+                    <select id="categorySelect" required>
+                        <option value="kids">Kids</option>
+                        <option value="musical">Musical</option>
                         <option value="action">Action</option>
                         <option value="fantasy">Fantasy</option>
                         <option value="horror">Horror</option>
@@ -120,19 +117,16 @@
                         <option value="self-help">Self Help</option>
                         <option value="science-fiction">Science Fiction</option>
                         <option value="mystery">Mystery</option>
-                        <option value="historical-fiction">Historical Fiction</option>
+                        <option value="historical">Historical</option>
                         <option value="biography">Biography</option>
                         <option value="comics">Comics</option>
                     </select><br>
                     <label for="imageInput">Image URL:</label>
-                    <input type="text" id="imageInput"><br>
-                    <button type="button" onclick="addNewBook()">Add Book</button>
+                    <input type="text" id="imageInput" required><br>
+                    <button type="submit">Add Book</button>
                 </form>
             </div>
         </div>
-
-        <!-- Search input (initially hidden) -->
-        <input type="text" id="searchInput" placeholder="Search..." oninput="handleSearch()">
     </nav>
 
     <!-- Main content area -->
@@ -142,58 +136,106 @@
     </div>
 
     <script>
+        const BASE_URL = 'https://openlibrary.org';
+
         // Function to toggle dropdown visibility
         function toggleDropdown(dropdownId) {
             const dropdown = document.getElementById(dropdownId);
-            if (dropdown.style.display === 'block') {
-                dropdown.style.display = 'none';
-            } else {
-                dropdown.style.display = 'block';
-            }
+            dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Function to toggle search bar visibility
-        function toggleSearchBar() {
-            const searchBar = document.getElementById('searchInput');
-            if (searchBar.style.display === 'none' || searchBar.style.display === '') {
-                searchBar.style.display = 'block';
-            } else {
-                searchBar.style.display = 'none';
-            }
-        }
-        
-        // Function to handle search input
-        function handleSearch() {
+        // Function to search books
+        async function searchBooks() {
             const searchTerm = document.getElementById('searchInput').value;
-            // Implement search functionality here (e.g., call API to search books)
-            console.log('Searching for:', searchTerm);
+            const encodedSearchTerm = encodeURIComponent(searchTerm);
+            const searchUrl = `${BASE_URL}/search.json?q=${encodedSearchTerm}`;
+
+            try {
+                const response = await axios.get(searchUrl);
+                const { docs } = response.data;
+                displayBooks(docs);
+            } catch (error) {
+                console.error('Error searching books:', error);
+                alert('Failed to search books. Please try again.');
+            }
         }
 
         // Function to display books based on category
-        function displayCategory(category) {
-            // Implement display books by category (e.g., call API with category parameter)
-            console.log('Displaying books for category:', category);
+        async function displayCategory(category) {
+            const apiUrl = `${BASE_URL}/subjects/${category}.json`;
+
+            try {
+                const response = await axios.get(apiUrl);
+                const { works } = response.data;
+                displayBooks(works);
+            } catch (error) {
+                console.error(`Error displaying books for category '${category}':`, error);
+                alert(`Failed to display books for category '${category}'. Please try again.`);
+            }
+        }
+
+        // Function to display books in the container
+        function displayBooks(books) {
+            const booksContainer = document.getElementById('book-container');
+            if (!booksContainer) return;
+
+            booksContainer.innerHTML = '';
+
+            books.forEach(book => {
+                const bookElement = createBookElement(book);
+                booksContainer.appendChild(bookElement);
+            });
+        }
+
+        // Function to create book element
+        function createBookElement(book) {
+            const { title, description, cover_i, subject } = book;
+            const imageUrl = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
+
+            const bookElement = document.createElement('div');
+            bookElement.classList.add('book');
+
+            const bookTitle = document.createElement('h3');
+            bookTitle.textContent = title || 'Untitled';
+            bookElement.appendChild(bookTitle);
+
+            const bookDescription = document.createElement('p');
+            bookDescription.textContent = description || 'No description available';
+            bookElement.appendChild(bookDescription);
+
+            const bookGenre = document.createElement('p');
+            bookGenre.textContent = `Genre: ${subject || 'Unknown'}`;
+            bookElement.appendChild(bookGenre);
+
+            const img = document.createElement('img');
+            img.src = imageUrl || 'https://via.placeholder.com/150';
+            img.alt = title || 'Book Image';
+            img.style.width = '150px';
+            bookElement.appendChild(img);
+
+            return bookElement;
         }
 
         // Function to add a new book
-        function addNewBook() {
-            // Implement adding a new book (e.g., collect form data and make API call)
-            console.log('Adding a new book...');
+        async function addNewBook(event) {
+            event.preventDefault();
+
             const title = document.getElementById('titleInput').value;
             const description = document.getElementById('descriptionInput').value;
             const category = document.getElementById('categorySelect').value;
             const imageUrl = document.getElementById('imageInput').value;
 
-            // Example: Use Axios to post data to server or perform other actions
-            // axios.post('/books', { title, description, category, imageUrl })
-            //     .then(response => {
-            //         console.log('New book added:', response.data);
-            //         // Optionally, refresh book display or show success message
-            //     })
-            //     .catch(error => {
-            //         console.error('Error adding new book:', error);
-            //         // Handle error display or logging
-            //     });
+            const newBook = { title, description, subject: category, cover_i: imageUrl };
+
+            try {
+                const response = await axios.post(`${BASE_URL}/works`, newBook);
+                console.log('New book added:', response.data);
+                alert('Book added successfully!');
+                // Refresh books display or show success message
+            } catch (error) {
+                console.error('Error adding new book:', error);
+                alert('Failed to add new book. Please try again.');
+            }
         }
     </script>
 

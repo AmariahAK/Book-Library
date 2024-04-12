@@ -1,5 +1,5 @@
 // Global Constants
-const BASE_URL = 'https://simple-books-api.glitch.me';
+const OPEN_LIBRARY_API = 'https://openlibrary.org';
 
 // Event listener for DOMContentLoaded
 document.addEventListener('DOMContentLoaded', () => {
@@ -7,8 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     addGenreEventListeners(); // Add event listeners to genre buttons
 });
 
-// Function to display books based on category
-async function displayBooks(category = '') {
+// Function to display books based on category or search query
+async function displayBooks(query = '') {
     try {
         const booksContainer = document.getElementById('book-container');
         if (!booksContainer) {
@@ -17,22 +17,24 @@ async function displayBooks(category = '') {
         }
 
         booksContainer.innerHTML = ''; // Clear previous books
-        
-        // Construct the API URL based on category
-        const apiUrl = category ? `${BASE_URL}/books?category=${category}` : `${BASE_URL}/books`;
-        const proxyUrl = 'https://cors-anywhere.herokuapp.com/' + apiUrl; // Prepend with CORS Anywhere proxy URL
-        
-        // Fetch books data using the CORS proxy
-        const response = await fetch(proxyUrl);
+
+        let apiUrl;
+        if (query) {
+            // If a query is provided, perform a search
+            apiUrl = `${OPEN_LIBRARY_API}/search.json?q=${query}`;
+        } else {
+            // Otherwise, fetch books for a specific category (genre)
+            apiUrl = `${OPEN_LIBRARY_API}/subjects/fiction.json`;
+        }
+
+        const response = await fetch(apiUrl);
         if (!response.ok) {
             throw new Error('Failed to fetch books');
         }
-        const data = await response.json();
-        const books = data || []; // Assuming books data is an array of book objects
+        const { works } = await response.json() || [];
 
-        // Iterate over fetched books and create book elements
-        books.forEach(book => {
-            const bookElement = createBookElement(book);
+        works.forEach(work => {
+            const bookElement = createBookElement(work);
             booksContainer.appendChild(bookElement);
         });
     } catch (error) {
@@ -43,73 +45,64 @@ async function displayBooks(category = '') {
 
 // Function to create a book element and attach event listeners
 function createBookElement(book) {
+    const { key, title, description, subject, cover_i } = book;
+    const imageUrl = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
+
     const bookElement = document.createElement('div');
     bookElement.classList.add('book');
 
-    // Extract book details from the book object
-    const { name, description, genre } = book;
-
-    // Create and append book title
     const bookTitle = document.createElement('h3');
-    bookTitle.textContent = name || 'Untitled';
+    bookTitle.textContent = title || 'Untitled';
     bookElement.appendChild(bookTitle);
 
-    // Create and append book description
     const bookDescription = document.createElement('p');
     bookDescription.textContent = description || 'No description available';
     bookElement.appendChild(bookDescription);
 
-    // Create and append book genre
     const bookGenre = document.createElement('p');
-    bookGenre.textContent = `Genre: ${genre || 'Unknown'}`;
+    bookGenre.textContent = `Genre: ${subject || 'Unknown'}`;
     bookElement.appendChild(bookGenre);
 
-    // Create and append book image (with placeholder)
     const img = document.createElement('img');
-    img.src = 'https://via.placeholder.com/150'; // Placeholder image URL
-    img.alt = name || 'Book Image';
-    img.style.width = '150px'; // Set image width for consistency
+    img.src = imageUrl || 'https://via.placeholder.com/150';
+    img.alt = title || 'Book Image';
+    img.style.width = '150px';
     bookElement.appendChild(img);
 
-    // Create and append like button
-    const likeButton = document.createElement('button');
-    likeButton.textContent = 'Like';
-    likeButton.addEventListener('click', () => {
-        likeBook(book.id); // Assuming book object has an ID property
-    });
-    bookElement.appendChild(likeButton);
+    const commentsSection = document.createElement('div');
+    commentsSection.classList.add('comments');
+    commentsSection.textContent = 'No comments yet.';
+    bookElement.appendChild(commentsSection);
 
-    // Create and append comment button
-    const commentButton = document.createElement('button');
-    commentButton.textContent = 'Comment';
-    commentButton.addEventListener('click', () => {
+    const likeButton = createButton('Like', () => likeBook(key));
+    const commentButton = createButton('Comment', () => {
         const comment = prompt('Enter your comment:');
         if (comment) {
-            addComment(book.id, comment); // Assuming book object has an ID property
+            addComment(key, comment);
         }
     });
-    bookElement.appendChild(commentButton);
-
-    // Create and append favorite button
-    const favoriteButton = document.createElement('button');
-    favoriteButton.textContent = 'Favorite';
-    favoriteButton.addEventListener('click', () => {
-        toggleFavorite(book.id); // Assuming book object has an ID property
-    });
-    bookElement.appendChild(favoriteButton);
-
-    // Create and append bookmark button
-    const bookmarkButton = document.createElement('button');
-    bookmarkButton.textContent = 'Bookmark';
-    bookmarkButton.addEventListener('click', () => {
+    const favoriteButton = createButton('Favorite', () => toggleFavorite(key));
+    const bookmarkButton = createButton('Bookmark', () => {
         const pageNumber = prompt('Enter the page number to bookmark:');
         if (pageNumber && !isNaN(pageNumber)) {
-            bookmarkPage(book.id, parseInt(pageNumber)); // Assuming book object has an ID property
+            bookmarkPage(key, parseInt(pageNumber));
         }
     });
+
+    bookElement.appendChild(likeButton);
+    bookElement.appendChild(commentButton);
+    bookElement.appendChild(favoriteButton);
     bookElement.appendChild(bookmarkButton);
 
     return bookElement;
+}
+
+// Helper function to create a button with click event listener
+function createButton(text, onClick) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.addEventListener('click', onClick);
+    return button;
 }
 
 // Function to handle clicking genre buttons
@@ -126,8 +119,9 @@ function addGenreEventListeners() {
 // Function to toggle the favorite status of a book
 async function toggleFavorite(bookId) {
     try {
-        // Implement your favorite toggle logic here
+        // Implement favorite toggle logic here
         console.log(`Toggle favorite for book with ID ${bookId}`);
+        alert('Book favorite toggled successfully!');
     } catch (error) {
         console.error('Error toggling favorite:', error);
         alert('Failed to toggle favorite. Please try again.');
@@ -137,7 +131,7 @@ async function toggleFavorite(bookId) {
 // Function to add a comment to a book
 async function addComment(bookId, comment) {
     try {
-        // Implement your comment adding logic here
+        // Implement comment adding logic here
         console.log(`Add comment "${comment}" to book with ID ${bookId}`);
         alert('Comment added successfully!');
     } catch (error) {
@@ -149,7 +143,7 @@ async function addComment(bookId, comment) {
 // Function to like a book
 async function likeBook(bookId) {
     try {
-        // Implement your like functionality here
+        // Implement like functionality here
         console.log(`Like book with ID ${bookId}`);
         alert('Book liked successfully!');
     } catch (error) {
@@ -161,7 +155,7 @@ async function likeBook(bookId) {
 // Function to bookmark a page in a book
 async function bookmarkPage(bookId, pageNumber) {
     try {
-        // Implement your bookmarking functionality here
+        // Implement bookmarking functionality here
         console.log(`Bookmark page ${pageNumber} of book with ID ${bookId}`);
         alert(`Page ${pageNumber} bookmarked successfully!`);
     } catch (error) {
