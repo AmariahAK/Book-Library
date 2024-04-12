@@ -12,34 +12,62 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
     <style>
-        /* CSS for button spacing and dropdowns */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: #483d8b;
-            color: #fff;
+        /* Additional CSS styles */
+        /* Reset default margin and padding */
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f7f6; /* Light beige background */
+            color: #333; /* Dark text color */
         }
 
+        /* Main container styles */
+        .container {
+            max-width: 1200px; /* Limit width for content */
+            margin: 0 auto; /* Center container horizontally */
+            padding: 20px; /* Add padding inside container */
+        }
+
+        /* Header styles */
+        header {
+            background-color: #483d8b; /* Dark slate blue background for header */
+            color: #fff; /* White text color */
+            padding: 20px;
+            text-align: center;
+        }
+
+        /* Navigation menu styles */
         nav {
+            background-color: #6a5acd; /* Slate blue background for navigation */
+            padding: 10px;
+            text-align: center;
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            background-color: #6a5acd;
-            padding: 10px;
         }
 
         nav button {
-            margin-right: 10px;
+            color: #fff; /* White text color for buttons */
+            text-decoration: none;
+            padding: 8px 16px;
+            margin: 0 5px;
+            background-color: #6a5acd;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
+        nav button:hover {
+            background-color: #836fff; /* Lighter purple on hover */
+        }
+
+        /* Dropdown content */
         .dropdown-content {
             display: none;
             position: absolute;
             background-color: #f9f9f9;
             min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             z-index: 1;
         }
 
@@ -54,46 +82,41 @@
             background-color: #f1f1f1;
         }
 
-        #searchInput {
-            width: 200px;
-            padding: 8px;
-            margin-right: 10px;
+        /* Book container styles */
+        #book-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            padding: 20px;
+        }
+
+        .book {
+            width: 250px;
+            margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background-color: #fff; /* White background for books */
+            position: relative; /* Position for absolute icons */
         }
 
-        /* Form styles */
-        form {
-            margin-top: 20px;
-        }
-
-        label {
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        textarea,
-        select {
-            width: 100%;
-            padding: 8px;
+        .book img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
         }
 
-        button {
-            padding: 10px 20px;
-            background-color: #6a5acd;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 10px;
+        .book h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
         }
 
-        button:hover {
-            background-color: #836fff;
+        .book p {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -102,33 +125,14 @@
     <!-- Header -->
     <header>
         <h1>Book Library</h1>
+        <!-- Search input -->
         <input type="text" id="searchInput" placeholder="Search...">
-        <button onclick="searchBooks()">Search</button>
+        <!-- Search button -->
+        <button onclick="toggleSearch()">Search</button>
     </header>
 
     <!-- Navigation menu -->
     <nav>
-        <!-- Genres dropdown -->
-        <div>
-            <button onclick="toggleDropdown('genreDropdown')">Genres</button>
-            <div id="genreDropdown" class="dropdown-content">
-                <a href="#" onclick="displayCategory('kids')">Kids Books</a>
-                <a href="#" onclick="displayCategory('musical')">Musicals</a>
-                <a href="#" onclick="displayCategory('action')">Action</a>
-                <a href="#" onclick="displayCategory('fantasy')">Fantasy</a>
-                <a href="#" onclick="displayCategory('horror')">Horror</a>
-                <a href="#" onclick="displayCategory('psychological')">Psychological</a>
-                <a href="#" onclick="displayCategory('thriller')">Thriller</a>
-                <a href="#" onclick="displayCategory('romance')">Romance</a>
-                <a href="#" onclick="displayCategory('self-help')">Self Help</a>
-                <a href="#" onclick="displayCategory('science-fiction')">Science Fiction</a>
-                <a href="#" onclick="displayCategory('mystery')">Mystery</a>
-                <a href="#" onclick="displayCategory('historical')">Historical</a>
-                <a href="#" onclick="displayCategory('biography')">Biography</a>
-                <a href="#" onclick="displayCategory('comics')">Comics</a>
-            </div>
-        </div>
-
         <!-- Add Book dropdown -->
         <div>
             <button onclick="toggleDropdown('addBookDropdown')">Add Book</button>
@@ -138,28 +142,19 @@
                     <input type="text" id="titleInput" required><br>
                     <label for="descriptionInput">Description:</label>
                     <textarea id="descriptionInput" required></textarea><br>
-                    <label for="categorySelect">Category:</label>
-                    <select id="categorySelect" required>
-                        <option value="kids">Kids</option>
-                        <option value="musical">Musical</option>
-                        <option value="action">Action</option>
-                        <option value="fantasy">Fantasy</option>
-                        <option value="horror">Horror</option>
-                        <option value="psychological">Psychological</option>
-                        <option value="thriller">Thriller</option>
-                        <option value="romance">Romance</option>
-                        <option value="self-help">Self Help</option>
-                        <option value="science-fiction">Science Fiction</option>
-                        <option value="mystery">Mystery</option>
-                        <option value="historical">Historical</option>
-                        <option value="biography">Biography</option>
-                        <option value="comics">Comics</option>
-                    </select><br>
+                    <label for="categoryInput">Category:</label>
+                    <input type="text" id="categoryInput" required><br>
                     <label for="imageInput">Image URL:</label>
                     <input type="text" id="imageInput" required><br>
                     <button type="submit">Add Book</button>
                 </form>
             </div>
+        </div>
+
+        <!-- Genres dropdown -->
+        <div>
+            <button onclick="toggleDropdown('genreDropdown')">Genres</button>
+            <div id="genreDropdown" class="dropdown-content"></div>
         </div>
     </nav>
 
@@ -169,9 +164,9 @@
         <div id="book-container"></div>
     </div>
 
+    <!-- JavaScript for interactive features -->
     <script>
-        const BASE_URL = 'https://www.googleapis.com/books/v1';
-        const API_KEY = 'AIzaSyDREw30aFfJweL9yMTjVPcSN6-xdmqkoNE';
+        const BASE_URL = 'http://localhost:3000'; // Assuming local server URL
 
         // Function to toggle dropdown visibility
         function toggleDropdown(dropdownId) {
@@ -179,33 +174,30 @@
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Function to search books using Google Books API
-        async function searchBooks() {
-            const searchTerm = document.getElementById('searchInput').value;
-            const encodedSearchTerm = encodeURIComponent(searchTerm);
-            const searchUrl = `${BASE_URL}/volumes?q=${encodedSearchTerm}&key=${API_KEY}`;
+        // Function to toggle search bar visibility
+        function toggleSearch() {
+            const searchBar = document.getElementById('searchInput');
+            const searchButton = document.querySelector('header button');
 
-            try {
-                const response = await axios.get(searchUrl);
-                const { items } = response.data;
-                displayBooks(items);
-            } catch (error) {
-                console.error('Error searching books:', error);
-                alert('Failed to search books. Please try again.');
+            if (searchBar.style.display === 'none') {
+                searchBar.style.display = 'inline-block';
+                searchButton.textContent = 'Search';
+            } else {
+                searchBar.style.display = 'none';
+                searchButton.textContent = 'Cancel';
             }
         }
 
-        // Function to display books based on category
-        async function displayCategory(category) {
-            const apiUrl = `${BASE_URL}/volumes?q=subject:${category}&key=${API_KEY}`;
-
+        // Function to fetch and display books
+        async function fetchBooks() {
             try {
-                const response = await axios.get(apiUrl);
-                const { items } = response.data;
-                displayBooks(items);
+                const response = await axios.get(`${BASE_URL}/books`);
+                const books = response.data;
+                displayBooks(books);
+                populateGenres(books);
             } catch (error) {
-                console.error(`Error displaying books for category '${category}':`, error);
-                alert(`Failed to display books for category '${category}'. Please try again.`);
+                console.error('Error fetching books:', error);
+                alert('Failed to fetch books. Please try again.');
             }
         }
 
@@ -224,9 +216,7 @@
 
         // Function to create book element
         function createBookElement(book) {
-            const { volumeInfo } = book;
-            const { title, description, categories, imageLinks } = volumeInfo;
-            const imageUrl = imageLinks ? imageLinks.thumbnail : 'https://via.placeholder.com/150';
+            const { title, description, category, image } = book;
 
             const bookElement = document.createElement('div');
             bookElement.classList.add('book');
@@ -239,12 +229,12 @@
             bookDescription.textContent = description || 'No description available';
             bookElement.appendChild(bookDescription);
 
-            const bookGenre = document.createElement('p');
-            bookGenre.textContent = `Genre: ${categories ? categories.join(', ') : 'Unknown'}`;
-            bookElement.appendChild(bookGenre);
+            const bookCategory = document.createElement('p');
+            bookCategory.textContent = `Category: ${category || 'Unknown'}`;
+            bookElement.appendChild(bookCategory);
 
             const img = document.createElement('img');
-            img.src = imageUrl;
+            img.src = image || 'https://via.placeholder.com/150';
             img.alt = title || 'Book Image';
             img.style.width = '150px';
             bookElement.appendChild(img);
@@ -252,34 +242,61 @@
             return bookElement;
         }
 
-        // Function to add a new book using Google Books API
+        // Function to populate genres dropdown
+        function populateGenres(books) {
+            const genreDropdown = document.getElementById('genreDropdown');
+            if (!genreDropdown) return;
+
+            const genres = [...new Set(books.map(book => book.genre))];
+            genres.forEach(genre => {
+                const genreLink = document.createElement('a');
+                genreLink.href = '#';
+                genreLink.textContent = genre;
+                genreLink.onclick = () => filterBooksByGenre(genre);
+                genreDropdown.appendChild(genreLink);
+            });
+        }
+
+        // Function to filter books by genre
+        async function filterBooksByGenre(genre) {
+            try {
+                const response = await axios.get(`${BASE_URL}/books?genre=${genre}`);
+                const books = response.data;
+                displayBooks(books);
+            } catch (error) {
+                console.error(`Error filtering books by genre '${genre}':`, error);
+                alert(`Failed to filter books by genre '${genre}'. Please try again.`);
+            }
+        }
+
+        // Function to add a new book
         async function addNewBook(event) {
             event.preventDefault();
 
             const title = document.getElementById('titleInput').value;
             const description = document.getElementById('descriptionInput').value;
-            const category = document.getElementById('categorySelect').value;
+            const category = document.getElementById('categoryInput').value;
             const imageUrl = document.getElementById('imageInput').value;
 
             const newBook = {
-                volumeInfo: {
-                    title,
-                    description,
-                    categories: [category],
-                    imageLinks: { thumbnail: imageUrl }
-                }
+                title,
+                description,
+                category,
+                image: imageUrl
             };
 
             try {
-                const response = await axios.post(`${BASE_URL}/volumes?key=${API_KEY}`, newBook);
-                console.log('New book added:', response.data);
+                await axios.post(`${BASE_URL}/books`, newBook);
                 alert('Book added successfully!');
-                // Refresh books display or show success message
+                fetchBooks(); // Refresh books display after adding a new book
             } catch (error) {
                 console.error('Error adding new book:', error);
                 alert('Failed to add new book. Please try again.');
             }
         }
+
+        // Initial fetch to load books on page load
+        fetchBooks();
     </script>
 
 </body>
