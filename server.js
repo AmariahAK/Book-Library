@@ -30,11 +30,11 @@ app.post('/books', (req, res) => {
 // Helper function to read books from database file
 function readBooksFromDatabase(genreFilter = null) {
     try {
-        const rawData = fs.readFileSync('db.json');
+        const rawData = fs.readFileSync(path.join(__dirname, 'db.json'));
         const books = JSON.parse(rawData).books || [];
 
         if (genreFilter) {
-            return books.filter(book => book.genre === genreFilter);
+            return books.filter(book => book.category === genreFilter); // Assuming 'category' is used instead of 'genre'
         }
 
         return books;
@@ -48,7 +48,7 @@ function readBooksFromDatabase(genreFilter = null) {
 function saveBooksToDatabase(books) {
     try {
         const data = JSON.stringify({ books }, null, 2);
-        fs.writeFileSync('db.json', data);
+        fs.writeFileSync(path.join(__dirname, 'db.json'), data);
         console.log('Books saved to database successfully.');
     } catch (error) {
         console.error('Error saving books to database:', error);

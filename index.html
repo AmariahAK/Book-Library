@@ -61,6 +61,40 @@
             border: 1px solid #ccc;
             border-radius: 5px;
         }
+
+        /* Form styles */
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #6a5acd;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #836fff;
+        }
     </style>
 </head>
 <body>
@@ -136,7 +170,8 @@
     </div>
 
     <script>
-        const BASE_URL = 'https://openlibrary.org';
+        const BASE_URL = 'https://www.googleapis.com/books/v1';
+        const API_KEY = 'AIzaSyDREw30aFfJweL9yMTjVPcSN6-xdmqkoNE';
 
         // Function to toggle dropdown visibility
         function toggleDropdown(dropdownId) {
@@ -144,16 +179,16 @@
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Function to search books
+        // Function to search books using Google Books API
         async function searchBooks() {
             const searchTerm = document.getElementById('searchInput').value;
             const encodedSearchTerm = encodeURIComponent(searchTerm);
-            const searchUrl = `${BASE_URL}/search.json?q=${encodedSearchTerm}`;
+            const searchUrl = `${BASE_URL}/volumes?q=${encodedSearchTerm}&key=${API_KEY}`;
 
             try {
                 const response = await axios.get(searchUrl);
-                const { docs } = response.data;
-                displayBooks(docs);
+                const { items } = response.data;
+                displayBooks(items);
             } catch (error) {
                 console.error('Error searching books:', error);
                 alert('Failed to search books. Please try again.');
@@ -162,12 +197,12 @@
 
         // Function to display books based on category
         async function displayCategory(category) {
-            const apiUrl = `${BASE_URL}/subjects/${category}.json`;
+            const apiUrl = `${BASE_URL}/volumes?q=subject:${category}&key=${API_KEY}`;
 
             try {
                 const response = await axios.get(apiUrl);
-                const { works } = response.data;
-                displayBooks(works);
+                const { items } = response.data;
+                displayBooks(items);
             } catch (error) {
                 console.error(`Error displaying books for category '${category}':`, error);
                 alert(`Failed to display books for category '${category}'. Please try again.`);
@@ -189,8 +224,9 @@
 
         // Function to create book element
         function createBookElement(book) {
-            const { title, description, cover_i, subject } = book;
-            const imageUrl = `https://covers.openlibrary.org/b/id/${cover_i}-M.jpg`;
+            const { volumeInfo } = book;
+            const { title, description, categories, imageLinks } = volumeInfo;
+            const imageUrl = imageLinks ? imageLinks.thumbnail : 'https://via.placeholder.com/150';
 
             const bookElement = document.createElement('div');
             bookElement.classList.add('book');
@@ -204,11 +240,11 @@
             bookElement.appendChild(bookDescription);
 
             const bookGenre = document.createElement('p');
-            bookGenre.textContent = `Genre: ${subject || 'Unknown'}`;
+            bookGenre.textContent = `Genre: ${categories ? categories.join(', ') : 'Unknown'}`;
             bookElement.appendChild(bookGenre);
 
             const img = document.createElement('img');
-            img.src = imageUrl || 'https://via.placeholder.com/150';
+            img.src = imageUrl;
             img.alt = title || 'Book Image';
             img.style.width = '150px';
             bookElement.appendChild(img);
@@ -216,7 +252,7 @@
             return bookElement;
         }
 
-        // Function to add a new book
+        // Function to add a new book using Google Books API
         async function addNewBook(event) {
             event.preventDefault();
 
@@ -225,10 +261,17 @@
             const category = document.getElementById('categorySelect').value;
             const imageUrl = document.getElementById('imageInput').value;
 
-            const newBook = { title, description, subject: category, cover_i: imageUrl };
+            const newBook = {
+                volumeInfo: {
+                    title,
+                    description,
+                    categories: [category],
+                    imageLinks: { thumbnail: imageUrl }
+                }
+            };
 
             try {
-                const response = await axios.post(`${BASE_URL}/works`, newBook);
+                const response = await axios.post(`${BASE_URL}/volumes?key=${API_KEY}`, newBook);
                 console.log('New book added:', response.data);
                 alert('Book added successfully!');
                 // Refresh books display or show success message
